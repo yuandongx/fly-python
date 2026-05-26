@@ -1,0 +1,90 @@
+# ============================================
+# fly-python 配置文件 (兜底)
+# 环境变量优先级高于本文件
+# ============================================
+
+database:
+  # 连接 URI (省略时从 host/port/user/password/db 拼接)
+  # uri: "mongodb://localhost:27017/fly_python"
+
+  host: "127.0.0.1"
+  port: 27017
+  # user: ""
+  # password: ""
+  db: "fly_pythonn"
+
+  # ---- 连接池 (最小化资源) ----
+  max_pool_size: 10          # 最大连接数
+  min_pool_size: 0           # 最小连接数 (0 = 空闲时不保活)
+  max_idle_time_ms: 60000    # 空闲连接最大存活时间 (ms)
+
+  # ---- 超时 ----
+  server_timeout_ms: 5000
+  connect_timeout_ms: 5000
+
+  # ---- 读写关注 ----
+  w: 1
+  read_preference: "primaryPreferred"
+
+# ============================================
+# 日志配置
+# ============================================
+logging:
+  level: "INFO"                   # DEBUG / INFO / WARNING / ERROR / CRITICAL
+  file: "logs/app.log"            # 日志文件路径
+  max_bytes: 10485760             # 单个文件最大字节数 (10MB)
+  backups: 5                      # 备份文件保留数量
+  console: true                   # 是否输出到终端
+  file_out: true                  # 是否输出到文件
+  format: "%(asctime)s | %(levelname)-8s | %(name)s | %(filename)s:%(lineno)d | %(message)s"
+  date_format: "%Y-%m-%d %H:%M:%S"
+
+# ============================================
+# Celery 配置 (中间件 Redis, 结果存 MongoDB)
+# ============================================
+celery:
+  # ---- Broker (中间件: Redis) ----
+  broker_url: "redis://127.0.0.1:6379/0"
+
+  # ---- Result Backend (结果: MongoDB) ----
+  result_backend: "mongodb://127.0.0.1:27017/fly_python"
+
+  # 结果过期时间 (秒), 默认 1 小时
+  result_expires: 3600
+
+  # 任务序列化
+  task_serializer: "json"
+  result_serializer: "json"
+  accept_content: ["json"]
+
+  # 时区
+  timezone: "Asia/Shanghai"
+  enable_utc: false
+
+  # worker 并发 & 预取
+  worker_concurrency: 4
+  worker_prefetch_multiplier: 1
+
+  # 重试
+  task_acks_late: true
+  task_reject_on_worker_lost: true
+
+  # ---------- MongoDB Backend 专用 ----------
+  mongodb_backend_settings:
+    database: "fly_python"
+    taskmeta_collection: "celery_taskmeta"
+    max_pool_size: 5
+
+  # ---------- 定时任务 (Beat Schedule) ----------
+  beat_schedule:
+    # 示例: 每分钟执行
+    # heartbeat_task:
+    #   task: "app.spider.tasks.heartbeat"
+    #   schedule: 60.0
+    # 示例: 每天凌晨 3 点
+    # daily_cleanup:
+    #   task: "app.spider.tasks.cleanup"
+    #   schedule:
+    #     crontab:
+    #       hour: 3
+    #       minute: 0
