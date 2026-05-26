@@ -53,7 +53,7 @@ broker_url = config.get(
 
 result_backend = config.get(
     "celery", "result_backend", env="CELERY_RESULT_BACKEND",
-    default="mongodb://127.0.0.1:27017/fly_pythonn",
+    default="mongodb://127.0.0.1:27017/fly_python",
 )
 
 mongo_backend = config.get("celery", "mongodb_backend_settings", default={})

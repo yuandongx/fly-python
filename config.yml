@@ -11,7 +11,7 @@ database:
   port: 27017
   # user: ""
   # password: ""
-  db: "fly_pythonn"
+  db: "fly_python"
 
   # ---- 连接池 (最小化资源) ----
   max_pool_size: 10          # 最大连接数
