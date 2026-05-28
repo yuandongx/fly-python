@@ -44,7 +44,7 @@ def task_get_sina_data(self) -> dict:
     try:
         data = get_sina_data()
         crud = get_crud("stock")
-        crud.update_many(key="idx", many=data, upsert=True)
+        crud.update_many(key="symbol", many=data, upsert=True)
         logger.info("成功获取新浪数据: %d 条记录", len(data))
         task_curd.update_one({"task": task_name, "start_time": start_time},
                               {"$set": {"status": "completed", "end_time": time.time()}})

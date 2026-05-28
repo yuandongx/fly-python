@@ -168,19 +168,28 @@ class CRUD:
 
     def update_many(
         self,
-        key: str,
+        key: str|list[str],
         many: list[Any],
         upsert: bool = False,
     ) -> UpdateResult:
         """批量更新,批量写入数据
         """
         updates = []
+        if isinstance(key, str):
+            key = [key]
+        
         for one in many:
-            if key in one:
-                updates.append(UpdateOne({key: one[key]}, {"$set": one}, upsert=upsert))
+            fileter_dict = {}
+            for k in key:
+                if k not in one:
+                    continue
+                else:
+                    fileter_dict[k] = one[k]
+            if fileter_dict:
+                updates.append(UpdateOne(fileter_dict, {"$set": one}, upsert=upsert))
         if not updates:
             return UpdateResult({"n": 0, "nModified": 0, "upserted": []}, acknowledged=True)
-        return self._col.bulk_write(updates)
+        return self._col.bulk_write(updates)     
 
     def replace_one(
         self,
