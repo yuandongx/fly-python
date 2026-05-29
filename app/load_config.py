@@ -69,8 +69,9 @@ class ConfigLoader:
             elif suffix == ".json":
                 with open(path, "r", encoding="utf-8") as fh:
                     self._raw = json.load(fh) or {}
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"❌ 加载配置文件失败: {path}")
+            print(f"❌ 错误信息: {e}")
 
     def _find_file(self) -> Optional[Path]:
         for d in _CONFIG_DIRS:
