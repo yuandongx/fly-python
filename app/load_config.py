@@ -30,6 +30,7 @@ from typing import Any, Optional
 _CONFIG_DIRS = [
     Path(__file__).resolve().parent.parent,   # fly-python/
     Path.cwd(),
+    os.getenv("CONFIG_DIR", "/app"),
 ]
 _CONFIG_FILES = ["config.yml", "config.yaml", "config.json"]
 
@@ -56,6 +57,7 @@ class ConfigLoader:
             return
         self._loaded = True
         path = self._find_file()
+        print(f"🔍 配置文件路径: {path}")
         if path is None:
             return
         try:
