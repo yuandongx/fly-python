@@ -93,7 +93,7 @@ celery:
     task_get_sina_data_afternoon:
       task: "app.spider.tasks.task_get_sina_data"
       schedule:
-        hour: "13-15"
+        hour: "13-1z"
         minute: 0
         day_of_week: "1-5"  # 仅工作日执行
     # 9点30至11点30每分钟执行一次
@@ -107,7 +107,7 @@ celery:
     task_get_fund_rank_data_afternoon:
       task: "app.spider.tasks.task_get_fund_rank_data"
       schedule:
-        hour: "13-15"
+        hour: "13-16"
         minute: 0
         day_of_week: "1-5"  # 仅工作日执行
 
