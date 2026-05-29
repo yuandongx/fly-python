@@ -116,19 +116,19 @@ def get_fund_rank(**kwargs):
 def get_tiantain_fund_rank_data(): 
     max_get_num = 10000
     result = []
-    time.sleep(3)
     for n in range(1, max_get_num):
+        time.sleep(2) # 避免过快请求被封
         data = get_fund_rank(pi=str(n), pn="50")
         if not data or not data.get('datas'):
             print(f"❌ 第{n}页数据获取失败，停止爬取")
             break
         all_pages =  data['allPages']
         pages_index = data['pageIndex']
-        if n >= all_pages or pages_index == all_pages:
-            print(f"✅ 已获取所有{all_pages}页数据，停止爬取")
-            break
         print(f"✅ 第{n}/{all_pages}页数据获取成功，记录数：{len(data['datas'])}")
         result.extend(data['datas'])
+        if pages_index == all_pages or n > int(all_pages):
+            print(f"✅ 已获取所有{all_pages}页数据，停止爬取")
+            break
     return result
 
 if __name__ == "__main__":
