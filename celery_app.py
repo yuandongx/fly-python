@@ -50,7 +50,7 @@ broker_url = config.get(
     "celery", "broker_url", env="CELERY_BROKER_URL",
     default="redis://127.0.0.1:6379/0",
 )
-print("====>", broker_url)
+print("====>", celery_cfg)
 result_backend = config.get(
     "celery", "result_backend", env="CELERY_RESULT_BACKEND",
     default="mongodb://127.0.0.1:27017/fly_python",
