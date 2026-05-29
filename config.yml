@@ -87,12 +87,12 @@ celery:
       schedule:
         hour: "9-11"
         minute: 0
-        weekday: "1-5"  # 仅工作日执行
+        day_of_week: "1-5"  # 仅工作日执行
     # 13点至15点每分钟执行一次
     task_get_sina_data_afternoon:
       task: "app.spider.tasks.task_get_sina_data"
       schedule:
         hour: "13-15"
         minute: 0
-        weekday: "1-5"  # 仅工作日执行
+        day_of_week: "1-5"  # 仅工作日执行
 
