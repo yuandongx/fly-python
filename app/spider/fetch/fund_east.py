@@ -1,6 +1,7 @@
 import requests
 import re
 import json
+import time
 
 # 1. 接口地址 + 参数
 url = "https://fund.eastmoney.com/data/rankhandler.aspx"
@@ -52,7 +53,7 @@ def get_fund_rank(**kwargs):
 
         # 正则提取括号内的核心数据
         # 格式大概：rankData([...])
-        print(text)
+        # print(text)
         print("🔍 正在解析数据...")
         pattern = r"rankData\s*=\s*?(.*)"
         match = re.search(pattern, text)
@@ -96,7 +97,7 @@ def get_fund_rank(**kwargs):
         ]
         all_records = data['datas']
         new_datas = []
-        print(f"✅ 数据获取成功，基金总数：{all_records['allNum']}")
+        print(f"✅ 数据获取成功，基金总数：{data['allNum']}, 分页总数：{data['allPages']}")
         print("-" * 80)
         n_fields = len(fields)
         for record in all_records:
@@ -115,6 +116,7 @@ def get_fund_rank(**kwargs):
 def get_tiantain_fund_rank_data(): 
     max_get_num = 10000
     result = []
+    time.sleep(3)
     for n in range(1, max_get_num):
         data = get_fund_rank(pi=str(n), pn="50")
         if not data or not data.get('datas'):
@@ -125,7 +127,7 @@ def get_tiantain_fund_rank_data():
         if n >= all_pages or pages_index == all_pages:
             print(f"✅ 已获取所有{all_pages}页数据，停止爬取")
             break
-        print(f"✅ 第{n}页数据获取成功，记录数：{len(data['datas'])}")
+        print(f"✅ 第{n}/{all_pages}页数据获取成功，记录数：{len(data['datas'])}")
         result.extend(data['datas'])
     return result
 
