@@ -7,6 +7,8 @@
 """
 from typing import Any, Optional
 
+from bson import ObjectId
+from bson.errors import InvalidId
 from pymongo.collection import Collection
 from pymongo import UpdateOne
 from pymongo.results import InsertOneResult, InsertManyResult, DeleteResult, UpdateResult
@@ -115,6 +117,22 @@ class CRUD:
     def collection(self) -> Collection:
         return self._col
 
+    # ---- 内部工具 ----
+
+    @staticmethod
+    def _normalize_id(filter_dict: dict) -> dict:
+        """将 filter 中字符串 _id 自动转为 ObjectId (兼容两种格式)"""
+        if not filter_dict:
+            return filter_dict
+        _id = filter_dict.get("_id")
+        if _id is not None and isinstance(_id, str):
+            try:
+                filter_dict = dict(filter_dict)
+                filter_dict["_id"] = ObjectId(_id)
+            except InvalidId:
+                pass  # 非 ObjectId 格式的字符串保持原样
+        return filter_dict
+
     # ======================== 新增 ========================
 
     def insert_one(self, document: dict) -> InsertOneResult:
@@ -129,7 +147,7 @@ class CRUD:
 
     def find_one(self, filter_dict: dict = None, **kwargs) -> Optional[dict]:
         """查询单条"""
-        filter_dict = filter_dict or {}
+        filter_dict = self._normalize_id(filter_dict or {})
         return self._col.find_one(filter_dict, **kwargs)
 
     def find_many(
@@ -141,7 +159,7 @@ class CRUD:
         **kwargs,
     ) -> list[dict]:
         """查询多条 (带分页/排序)"""
-        filter_dict = filter_dict or {}
+        filter_dict = self._normalize_id(filter_dict or {})
         cursor = self._col.find(filter_dict, **kwargs)
         if sort:
             cursor = cursor.sort(sort)
@@ -153,7 +171,7 @@ class CRUD:
 
     def count(self, filter_dict: dict = None) -> int:
         """统计数量"""
-        return self._col.count_documents(filter_dict or {})
+        return self._col.count_documents(self._normalize_id(filter_dict or {}))
 
     # ======================== 更新 ========================
 
@@ -164,7 +182,7 @@ class CRUD:
         upsert: bool = False,
     ) -> UpdateResult:
         """更新单条"""
-        return self._col.update_one(filter_dict, data, upsert=upsert)
+        return self._col.update_one(self._normalize_id(filter_dict), data, upsert=upsert)
 
     def update_many(
         self,
@@ -198,17 +216,17 @@ class CRUD:
         upsert: bool = False,
     ) -> UpdateResult:
         """替换单条文档 (整个文档替换)"""
-        return self._col.replace_one(filter_dict, replacement, upsert=upsert)
+        return self._col.replace_one(self._normalize_id(filter_dict), replacement, upsert=upsert)
 
     # ======================== 删除 ========================
 
     def delete_one(self, filter_dict: dict) -> DeleteResult:
         """删除单条"""
-        return self._col.delete_one(filter_dict)
+        return self._col.delete_one(self._normalize_id(filter_dict))
 
     def delete_many(self, filter_dict: dict) -> DeleteResult:
         """批量删除"""
-        return self._col.delete_many(filter_dict)
+        return self._col.delete_many(self._normalize_id(filter_dict))
 
     # ======================== 聚合 ========================
 

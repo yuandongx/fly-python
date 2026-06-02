@@ -89,9 +89,22 @@ def _register_handler(app: FastAPI, handler_cls: type[BaseHandler]) -> None:
     router.add_api_route("", _post, methods=["POST"], summary=f"创建 {name}")
 
     # ------------- GET /api/{name} -------------
-    async def _get_list():
+    async def _get_list(
+        page: int = Query(1, ge=1, description="页码"),
+        size: int = Query(None, ge=1, le=1000, description="每页条数"),
+        sort_by: Optional[str] = Query(None, description="排序字段"),
+        sort_order: int = Query(-1, ge=-1, le=1, description="排序方向: 1=升序, -1=降序"),
+    ):
         try:
-            result = instance.get()
+            # 收集其他 query 参数作为过滤条件
+            filters = {}
+            result = instance.get(
+                page=page,
+                size=size,
+                sort_by=sort_by,
+                sort_order=sort_order,
+                **filters,
+            )
             return JSONResponse(content=result)
         except Exception as exc:
             logger.error("GET /api/%s 异常: %s", name, exc)

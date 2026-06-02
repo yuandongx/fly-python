@@ -7,7 +7,7 @@ database:
   # 连接 URI (省略时从 host/port/user/password/db 拼接)
   # uri: "mongodb://root:qwerASDF1234@mongo:27017/fly_python"
 
-  host: "mongo"
+  host: "120.48.130.105"
   port: 27017
   user: "root"
   password: "qwerASDF1234"

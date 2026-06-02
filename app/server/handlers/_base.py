@@ -36,9 +36,10 @@ class BaseHandler:
     """通用 Handler 基类 — 每个子类 = 一组 RESTful 接口"""
 
     # ---- 子类必须/应该重写的属性 ----
-    NAME: str = None           # URL 前缀, 如 "user" → /api/user
-    DB: str = "fly_python"    # MongoDB 数据库名
-    COLLECTION: str = "base"   # MongoDB 集合名
+    NAME: str = None            # URL 前缀, 如 "user" → /api/user
+    DB: str = "fly_python"      # MongoDB 数据库名
+    COLLECTION: str = "base"    # MongoDB 集合名
+    PAGE_SIZE: int = 20         # 默认分页大小
 
     # ---- 内部能力 ----
 
@@ -56,14 +57,60 @@ class BaseHandler:
         result = self.crud.insert_one(data)
         return {"id": str(result.inserted_id)}
 
-    def get(self, item_id: str = None) -> Any:
-        """查询 — GET /api/{NAME}[/{item_id}]"""
+    def get(
+        self,
+        item_id: str = None,
+        page: int = 1,
+        size: int = None,
+        sort_by: str = None,
+        sort_order: int = -1,
+        **filters,
+    ) -> Any:
+        """查询 — GET /api/{NAME}[/{item_id}]
+
+        列表查询支持:
+          - 分页:  page / size
+          - 排序:  sort_by / sort_order (1=升序, -1=降序)
+          - 过滤:  其余 query 参数自动作为等于过滤条件
+        """
         if item_id:
             doc = self.crud.find_one({"_id": item_id})
             if doc is None:
                 return {"error": "not found"}
+            doc["id"] = str(doc.pop("_id"))
             return doc
-        return self.crud.find_many()
+
+        # ---- 列表查询: 分页 + 过滤 + 排序 ----
+        size = size or self.PAGE_SIZE
+        skip = max(0, (page - 1)) * size
+
+        # 构建排序
+        sort = None
+        if sort_by:
+            sort = [(sort_by, sort_order)]
+
+        # 总数
+        total = self.crud.count(filters)
+
+        # 查询数据
+        items = self.crud.find_many(
+            filter_dict=filters,
+            sort=sort,
+            skip=skip,
+            limit=size,
+        )
+
+        # 将ObjectId 转为字符串, 以便 JSON 序列化
+        for item in items:
+            item["id"] = str(item.pop("_id"))
+
+        return {
+            "total": total,
+            "page": page,
+            "size": size,
+            "pages": max(1, (total + size - 1) // size) if total else 1,
+            "items": items,
+        }
 
     def put(self, item_id: str, data: dict) -> Any:
         """全量更新 — PUT /api/{NAME}/{item_id}"""

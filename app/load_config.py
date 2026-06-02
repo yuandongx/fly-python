@@ -28,9 +28,9 @@ from typing import Any, Optional
 # ---------- 配置文件定位 ----------
 
 _CONFIG_DIRS = [
+    os.getenv("CONFIG_DIR", "/app"),
     Path(__file__).resolve().parent.parent,   # fly-python/
     Path.cwd(),
-    os.getenv("CONFIG_DIR", "/app"),
 ]
 _CONFIG_FILES = ["config.yml", "config.yaml", "config.json"]
 
@@ -76,7 +76,7 @@ class ConfigLoader:
     def _find_file(self) -> Optional[Path]:
         for d in _CONFIG_DIRS:
             for f in _CONFIG_FILES:
-                path = d / f
+                path = Path(d, f)
                 if path.exists():
                     return path
         return None
