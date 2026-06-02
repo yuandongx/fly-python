@@ -16,7 +16,7 @@ from app.server.handlers._base import BaseHandler
 class FundHandler(BaseHandler):
     NAME = "fund"
     DB = "fly_python"
-    COLLECTION = "funds"
+    COLLECTION = "fund"
 
     # 所有 CRUD 方法继承自 BaseHandler, 无需重复编写
     # 如果需要自定义逻辑, 直接重写对应方法即可
