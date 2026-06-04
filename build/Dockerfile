@@ -2,14 +2,11 @@
 # 基于官方的python3.14镜像构建
 FROM python:3.14
 
-COPY requirements.txt .
+COPY . /app
 # 镜像还能运行nginx
-# RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*;\
-#     echo "daemon on;" >> /etc/nginx/nginx.conf;\
-#     pip install -r requirements.txt;
+RUN pip install -r /app/requirements.txt
 
 # 设置工作目录
 WORKDIR /app
-# 复制依赖文件
-# 复制应用代码
-COPY . .    
+
+ENTRYPOINT ["/app/entrypoint.sh"]
