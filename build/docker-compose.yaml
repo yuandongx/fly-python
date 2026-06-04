@@ -2,8 +2,23 @@ version: '3.8'
 
 services:
 
+  web:
+    image: ghcr.io/yuandongx/fly-vuetify:develop
+    restart: always
+    tty: true
+    stdin_open: true
+    command: bash
+    ports:
+      - 80:80
+    networks:
+      - app-network
+    depends_on:
+      - api
+    environment:
+      - TZ=Asia/Shanghai
+
   api:
-    image: python:3.14.5
+    image: ghcr.io/yuandongx/fly-python:develop
     restart: always
     tty: true
     stdin_open: true
@@ -62,4 +77,4 @@ services:
 networks:
   app-network:
     name: app_network
-    attachable: true
+    attachable: true    bbc cbbbcb bnbnbnnnnnnnnn 
