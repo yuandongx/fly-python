@@ -25,5 +25,4 @@ services:
 networks:
   app-network:
     name: app_network
-    attachable: true
     external: true
