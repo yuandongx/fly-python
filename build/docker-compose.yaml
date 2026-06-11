@@ -5,8 +5,6 @@ services:
   web:
     image: ghcr.io/yuandongx/fly-vuetify:develop
     restart: always
-    tty: true
-    stdin_open: true
     command: bash
     ports:
       - 80:80

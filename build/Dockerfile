@@ -9,4 +9,4 @@ RUN pip install -r /app/requirements.txt
 # 设置工作目录
 WORKDIR /app
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["/app/entry-point.sh"]
