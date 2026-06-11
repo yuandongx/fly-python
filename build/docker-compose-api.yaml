@@ -7,9 +7,7 @@ services:
       context: /home/develop/workspace/fly-python
       dockerfile: /home/develop/workspace/fly-python/build/Dockerfile
     restart: always
-    tty: true
-    stdin_open: true
-    command: bash
+    command: server
     ports:
       - 8000:8000
     networks:
