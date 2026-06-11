@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  api:
+    image: fly-python:develop
+    build:
+      context: ../fly-python
+      dockerfile: Dockerfile
+    restart: always
+    tty: true
+    stdin_open: true
+    command: bash
+    ports:
+      - 8000:8000
+    networks:
+      - app-network
+    depends_on:
+      - redis
+      - mongo
+    volumes:
+      - /home/develop/workspace/fly-python:/app:rw
+    environment:
+      - TZ=Asia/Shanghai
+
+networks:
+  app-network:
+    name: app_network
+    attachable: true
+    external: true
