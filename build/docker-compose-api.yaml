@@ -4,8 +4,8 @@ services:
   api:
     image: fly-python:develop
     build:
-      context: ../fly-python
-      dockerfile: Dockerfile
+      context: /home/develop/workspace/fly-python
+      dockerfile: /home/develop/workspace/fly-python/build/Dockerfile
     restart: always
     tty: true
     stdin_open: true
