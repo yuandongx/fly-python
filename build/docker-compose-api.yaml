@@ -14,9 +14,6 @@ services:
       - 8000:8000
     networks:
       - app-network
-    depends_on:
-      - redis
-      - mongo
     volumes:
       - /home/develop/workspace/fly-python:/app:rw
     environment:
