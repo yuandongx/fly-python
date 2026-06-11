@@ -77,4 +77,4 @@ services:
 networks:
   app-network:
     name: app_network
-    attachable: true    bbc cbbbcb bnbnbnnnnnnnnn 
+    attachable: true  
