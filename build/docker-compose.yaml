@@ -3,7 +3,10 @@ version: '3.8'
 services:
 
   web:
-    image: ghcr.io/yuandongx/fly-vuetify:develop
+    # image: ghcr.io/yuandongx/fly-vuetify:develop
+    build:
+      context: ../fly-vuetify
+      dockerfile: Dockerfile
     restart: always
     command: bash
     ports:
@@ -16,7 +19,10 @@ services:
       - TZ=Asia/Shanghai
 
   api:
-    image: ghcr.io/yuandongx/fly-python:develop
+    # image: ghcr.io/yuandongx/fly-python:develop
+    build:
+      context: ../fly-python
+      dockerfile: Dockerfile
     restart: always
     tty: true
     stdin_open: true
