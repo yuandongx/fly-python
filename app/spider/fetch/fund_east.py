@@ -2,6 +2,7 @@ import requests
 import re
 import json
 import time
+from datetime import datetime
 
 # 1. 接口地址 + 参数
 url = "https://fund.eastmoney.com/data/rankhandler.aspx"
@@ -40,7 +41,7 @@ def js_to_json(js_str):
 def get_fund_rank(**kwargs):
     try:
         params = get_params(**kwargs)
-
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         # 发送请求
         resp = requests.get(url, params=params, headers=headers, timeout=10)
         resp.raise_for_status()
@@ -106,6 +107,7 @@ def get_fund_rank(**kwargs):
                 print(f"⚠️ 记录字段数不匹配，跳过：{record}")
                 continue
             fund_info = dict(zip(fields, tmp))
+            fund_info['更新时间'] = now
             new_datas.append(fund_info)
         data['datas'] = new_datas
         return data
