@@ -16,6 +16,20 @@ services:
       - /home/develop/workspace/fly-python:/app:rw
     environment:
       - TZ=Asia/Shanghai
+  
+  worker:
+    image: fly-python:develop
+    build:
+      context: /home/develop/workspace/fly-python
+      dockerfile: /home/develop/workspace/fly-python/build/Dockerfile
+    restart: always
+    command: ["all"]
+    networks:
+      - app-network
+    volumes:
+      - /home/develop/workspace/fly-python:/app:rw
+    environment:
+      - TZ=Asia/Shanghai
 
 networks:
   app-network:
