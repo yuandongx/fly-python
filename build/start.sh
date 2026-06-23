@@ -19,4 +19,4 @@ ls -l
 # 启动目标服务
 echo "Starting services..."
 # 启动服务
-docker-compose -p "$PROJECT_NAME" -f build/docker-compose-api.yml up -d 
+docker-compose -p "$PROJECT_NAME" -f build/docker-compose-api.yaml up -d 
