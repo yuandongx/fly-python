@@ -27,6 +27,10 @@ from app.database import get_crud
 logger = get_task_logger(__name__)
 
 
+def _t() -> str:
+    """返回当前时间的字符串表示"""
+    return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
 # ============================
 # 异步任务 sina
 # ============================
@@ -35,7 +39,7 @@ def task_get_sina_data(self) -> dict:
     from app.spider.fetch.sina import get_sina_data
     task_name = "app.spider.tasks.task_get_sina_data"
     task_curd = get_crud("spider_task")
-    start_time = time.time()
+    start_time = _t()
     task_curd.insert_one({
         "task": task_name,
         "status": "started",
@@ -47,7 +51,7 @@ def task_get_sina_data(self) -> dict:
         crud.update_many(key="symbol", many=data, upsert=True)
         logger.info("成功获取新浪数据: %d 条记录", len(data))
         task_curd.update_one({"task": task_name, "start_time": start_time},
-                              {"$set": {"status": "completed", "end_time": time.time()}})
+                              {"$set": {"status": "completed", "end_time": _t()}})
         return {"status": "success", "count": len(data)}
     except Exception as exc:
         logger.error("获取新浪数据失败: %s", exc)
@@ -55,10 +59,10 @@ def task_get_sina_data(self) -> dict:
         crud.insert_one({
             "status": "error",
             "error": str(exc),
-            "ts": time.time()
+            "time": _t()
         })
         task_curd.update_one({"task": task_name, "start_time": start_time},
-                              {"$set": {"status": "failed", "end_time": time.time()}})
+                              {"$set": {"status": "failed", "end_time": _t()}})
 # ===========================
 
 # 基金排行获取作秀
@@ -100,7 +104,7 @@ def task_get_fund_rank_data(self) -> Optional[dict]:
             logger.warning("未获取到基金排行数据")
             rtn = {"status": "no_data"}
         task_curd.update_one({"task": task_name, "start_time": start_time},
-                              {"$set": {"status": "completed", "end_time": time.time()}})
+                              {"$set": {"status": "completed", "end_time": _t()}})
         return rtn
     except Exception as exc:
         logger.error("获取基金排行数据失败: %s", exc)
@@ -108,17 +112,17 @@ def task_get_fund_rank_data(self) -> Optional[dict]:
         crud.insert_one({
             "status": "error",
             "error": str(exc),
-            "ts": time.time()
+            "time": _t()
         })
         task_curd.update_one({"task": task_name, "start_time": start_time},
-                              {"$set": {"status": "failed", "end_time": time.time()}})
+                              {"$set": {"status": "failed", "end_time": _t()}})
         return {"status": "error", "message": str(exc)}
 
 @app.task(bind=True, max_retries=3, default_retry_delay=60, name="app.spider.tasks.heartbeat")
 def heartbeat(self) -> dict:
     """心跳探测 — 用于验证 Celery 链路是否正常"""
     logger.info("心跳任务执行中...")
-    return {"status": "alive", "timestamp": time.time()}
+    return {"status": "alive", "timestamp": _t()}
 
 
 
