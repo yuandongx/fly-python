@@ -18,8 +18,5 @@ ls -l
 
 # 启动目标服务
 echo "Starting services..."
-# 启动第一个服务
-docker-compose -p "$PROJECT_NAME" up -d "$TARGET_SERVICE1"
-# 启动第二个服务
-docker-compose -p "$PROJECT_NAME" up -d "$TARGET_SERVICE2"
-echo "Services started."
+# 启动服务
+docker-compose -p "$PROJECT_NAME" up -f build/docker-compose-api.yml -d 
