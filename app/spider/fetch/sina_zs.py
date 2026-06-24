@@ -147,6 +147,7 @@ def get_sina_zs_data(params: dict) -> Optional[list[dict]]:
     """
     list_str = params.get("list", "")
     rn = params.get("rn", "")
+    _date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     if not list_str:
         logger.warning("get_sina_zs_data: list 参数为空")
         return None
@@ -187,6 +188,7 @@ def get_sina_zs_data(params: dict) -> Optional[list[dict]]:
     for code, data_str in matches:
         values = data_str.split(",")
         item = _parse_values(code, values)
+        item['date'] = _date
         result.append(item)
 
     logger.info("成功解析 %d 条指数数据", len(result))
