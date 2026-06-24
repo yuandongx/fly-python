@@ -202,8 +202,9 @@ def get_sina_zs_data_with_timestamp() -> Optional[list[dict]]:
         list[dict] | None — 解析后的指数列表, 失败或空数据返回 None
     """
     result = []
-    rn = str(int(time() * 1000))  # 毫秒级时间戳
     for list_str in [A_SHARE, ASIA, EUROPE, AMERICA]:
+
+        rn = str(int(time.time() * 1000))  # 毫秒级时间戳
         params = {"list": list_str, "rn": rn}
         rtn = get_sina_zs_data(params)
         if rtn:
