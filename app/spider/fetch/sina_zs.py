@@ -46,7 +46,7 @@ URL: https://hq.sinajs.cn/rn={rn}&list={codes}
 """
 import re
 from typing import Any, Optional
-from time import time
+import time
 
 import requests
 
@@ -208,5 +208,5 @@ def get_sina_zs_data_with_timestamp() -> Optional[list[dict]]:
         rtn = get_sina_zs_data(params)
         if rtn:
             result.extend(rtn)
-        time.sleep(3)  # 避免请求过快
+        time.sleep(3) # 避免请求过快
     return result if result else []
