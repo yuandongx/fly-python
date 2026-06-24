@@ -15,7 +15,7 @@ from app.server.handlers._base import BaseHandler
 
 class TaskHandler(BaseHandler):
     NAME = "task"
-    DB = "fly_python"
+    # DB = "fly_python"
     COLLECTION = "task"
 
     # 所有 CRUD 方法继承自 BaseHandler, 无需重复编写

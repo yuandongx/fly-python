@@ -30,6 +30,11 @@ logger = get_task_logger(__name__)
 def _t() -> str:
     """返回当前时间的字符串表示"""
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+# ============================
+# 定时任务 (在 config.yml 中配置 schedule)
+# ============================
+
+
 
 # ============================
 # 异步任务 sina
@@ -130,14 +135,17 @@ def heartbeat(self) -> dict:
 # 定时任务 (在 config.yml 中配置 schedule)
 # ============================
 
-@app.task(bind=True, name="app.spider.tasks.cleanup")
-def cleanup(self) -> dict:
-    """定期清理过期数据 (示例定时任务)"""
-    logger.info("定时清理任务开始...")
-    crud = get_crud("spider_results")
-    cutoff = time.time() - 7 * 24 * 3600  # 7 天前的数据
-    crud.delete_many({"ts": {"$lt": cutoff}})
-    logger.info("定时清理完成")
+@app.task(bind=True, name="app.spider.tasks.task_get_sina_zs_data")
+def task_get_sina_zs_data(self) -> dict:
+    """定时获取新浪指数数据并持久化到数据库"""
+    logger.info("定时获取新浪指数数据任务开始...")
+    from app.spider.fetch.sina_zs import get_sina_zs_data_with_timestamp
+    data = get_sina_zs_data_with_timestamp()
+    if data:
+        crud = get_crud("zs")
+        crud.update_many(key=["name", "date"], many=data, upsert=True)
+        logger.info("成功获取新浪指数数据: %d 条记录", len(data))
+    logger.info("定时获取新浪指数数据任务完成")
     return {"cleaned": "before_7_days"}
 
 

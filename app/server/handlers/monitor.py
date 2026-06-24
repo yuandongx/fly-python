@@ -15,7 +15,7 @@ from app.server.handlers._base import BaseHandler
 
 class MonitorHandler(BaseHandler):
     NAME = "monitor"
-    DB = "fly_python"
+    # DB = "fly_python"
     COLLECTION = "monitor"
 
     # 所有 CRUD 方法继承自 BaseHandler, 无需重复编写

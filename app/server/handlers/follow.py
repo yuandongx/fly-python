@@ -13,10 +13,20 @@ URL:
 from app.server.handlers._base import BaseHandler
 
 
-class FollowHandler(BaseHandler):
-    NAME = "follow"
-    DB = "fly_python"
-    COLLECTION = "follow"
+class FollowStockHandler(BaseHandler):
+    NAME = "follow_stock"
+    # DB = "fly_python"
+    COLLECTION = "follow_stock"
+
+    # 所有 CRUD 方法继承自 BaseHandler, 无需重复编写
+    # 如果需要自定义逻辑, 直接重写对应方法即可
+
+
+
+class FollowFundHandler(BaseHandler):
+    NAME = "follow_fund"
+    # DB = "fly_python"
+    COLLECTION = "follow_fund"
 
     # 所有 CRUD 方法继承自 BaseHandler, 无需重复编写
     # 如果需要自定义逻辑, 直接重写对应方法即可
