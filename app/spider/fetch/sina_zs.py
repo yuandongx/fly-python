@@ -147,7 +147,7 @@ def get_sina_zs_data(params: dict) -> Optional[list[dict]]:
     """
     list_str = params.get("list", "")
     rn = params.get("rn", "")
-    _date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    _date = time.strftime("%Y-%m-%d", time.localtime())
     if not list_str:
         logger.warning("get_sina_zs_data: list 参数为空")
         return None
