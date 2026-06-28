@@ -43,6 +43,8 @@ class BaseHandler:
 
     ALLOW_METHOD = ["GET", "POST", "DELETE", "PUT", "PATCH"]
 
+    BODY_PARAMS = None  # FastAPI Body 参数, 可在子类中自定义
+
     # ---- 内部能力 ----
 
     @property

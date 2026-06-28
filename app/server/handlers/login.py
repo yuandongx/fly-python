@@ -13,6 +13,8 @@ from typing import Optional
 import time
 import redis
 
+from pydantic import BaseModel
+
 from app.server.handlers._base import BaseHandler
 from app.load_config import config
 from app.log_util import get_logger
@@ -162,10 +164,15 @@ class LoginHandler(BaseHandler):
 # LogoutHandler
 # ============================
 
+class LoginItem(BaseModel):
+    username: str
+    password: str
+
 class LogoutHandler(BaseHandler):
     NAME = "auth/logout"
     COLLECTION = "login"
     ALLOW_METHOD = ["POST"]
+    BODY_MODEL = LoginItem
 
     def post(self, data: dict) -> dict:
         """POST /api/auth/logout — 销毁会话"""

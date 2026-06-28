@@ -20,7 +20,3 @@ class StockHandler(BaseHandler):
 
     # 所有 CRUD 方法继承自 BaseHandler, 无需重复编写
     # 如果需要自定义逻辑, 直接重写对应方法即可
-
-
-class TopStockHandler(StockHandler):
-    pass
