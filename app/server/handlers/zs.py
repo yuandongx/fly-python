@@ -13,7 +13,7 @@ URL:
 from app.server.handlers._base import BaseHandler
 
 
-class ZsHandler(BaseHandler):
+class MarketIndicesHandler(BaseHandler):
     NAME = "zs"
     # DB = "fly_python"
     COLLECTION = "zs"

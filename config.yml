@@ -116,8 +116,8 @@ celery:
     task_get_sina_zs_data:
       task: "app.spider.tasks.task_get_sina_zs_data"
       schedule:
-        hour: "9-18"
-        minute: "*/2" # 每30分钟执行一次
+        hour: "9-15"
+        minute: "*/2" # 每2分钟执行一次
         day_of_week: "1-5"  # 仅工作日执行
 
 

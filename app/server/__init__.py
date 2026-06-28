@@ -28,7 +28,7 @@ import os
 from pathlib import Path
 from typing import Optional
 
-from fastapi import FastAPI, APIRouter, Path as FastPath, Body, Query
+from fastapi import FastAPI, APIRouter, Path as FastPath, Body, Query, Request
 from fastapi.responses import JSONResponse
 
 from app.log_util import logger
@@ -36,6 +36,9 @@ from .handlers._base import BaseHandler
 
 _HANDLERS_DIR = Path(__file__).resolve().parent / "handlers"
 
+
+def not_found_handler():
+    return JSONResponse(status_code=404, content={"error": "Not found"})
 
 def _discover_handlers() -> list[type[BaseHandler]]:
     """扫描 handlers/ 目录, 发现所有 BaseHandler 子类"""
@@ -75,18 +78,20 @@ def _register_handler(app: FastAPI, handler_cls: type[BaseHandler]) -> None:
         return
 
     instance = handler_cls()
+    allows = instance.ALLOW_METHOD
     router = APIRouter(prefix=f"/api/{name}", tags=[name])
 
     # ------------- POST /api/{name} -------------
-    async def _post(data: dict = Body(...)):
+    async def _post(request: Request, data: dict = Body(...)):
         try:
-            result = instance.post(data)
+            result = instance.post(data, request=request)
             return JSONResponse(content=result)
         except Exception as exc:
             logger.error("POST /api/%s 异常: %s", name, exc)
             return JSONResponse(status_code=500, content={"error": str(exc)})
 
-    router.add_api_route("", _post, methods=["POST"], summary=f"创建 {name}")
+    if 'POST' in allows:
+        router.add_api_route("", _post, methods=["POST"], summary=f"创建 {name}")
 
     # ------------- GET /api/{name} -------------
     async def _get_list(
@@ -110,7 +115,8 @@ def _register_handler(app: FastAPI, handler_cls: type[BaseHandler]) -> None:
             logger.error("GET /api/%s 异常: %s", name, exc)
             return JSONResponse(status_code=500, content={"error": str(exc)})
 
-    router.add_api_route("", _get_list, methods=["GET"], summary=f"查询 {name} 列表")
+    if "GET" in allows:
+        router.add_api_route("", _get_list, methods=["GET"], summary=f"查询 {name} 列表")
 
     # ------------- GET /api/{name}/{item_id} -------------
     async def _get_one(item_id: str = FastPath(..., description="文档 ID")):
@@ -136,7 +142,8 @@ def _register_handler(app: FastAPI, handler_cls: type[BaseHandler]) -> None:
             logger.error("PUT /api/%s/%s 异常: %s", name, item_id, exc)
             return JSONResponse(status_code=500, content={"error": str(exc)})
 
-    router.add_api_route("/{item_id}", _put, methods=["PUT"], summary=f"全量更新 {name}")
+    if "PUT" in allows:
+        router.add_api_route("/{item_id}", _put, methods=["PUT"], summary=f"全量更新 {name}")
 
     # ------------- DELETE /api/{name}/{item_id} -------------
     async def _delete(item_id: str = FastPath(...)):
@@ -148,8 +155,8 @@ def _register_handler(app: FastAPI, handler_cls: type[BaseHandler]) -> None:
         except Exception as exc:
             logger.error("DELETE /api/%s/%s 异常: %s", name, item_id, exc)
             return JSONResponse(status_code=500, content={"error": str(exc)})
-
-    router.add_api_route("/{item_id}", _delete, methods=["DELETE"], summary=f"删除 {name}")
+    if "DELETE" in allows:
+        router.add_api_route("/{item_id}", _delete, methods=["DELETE"], summary=f"删除 {name}")
 
     # ------------- PATCH /api/{name}/{item_id} -------------
     async def _patch(item_id: str = FastPath(...), data: dict = Body(...)):
@@ -162,10 +169,11 @@ def _register_handler(app: FastAPI, handler_cls: type[BaseHandler]) -> None:
             logger.error("PATCH /api/%s/%s 异常: %s", name, item_id, exc)
             return JSONResponse(status_code=500, content={"error": str(exc)})
 
-    router.add_api_route("/{item_id}", _patch, methods=["PATCH"], summary=f"部分更新 {name}")
+    if "PATCH" in allows:
+        router.add_api_route("/{item_id}", _patch, methods=["PATCH"], summary=f"部分更新 {name}")
 
     app.include_router(router)
-    logger.info("注册路由: /api/%s [POST/GET/PUT/DELETE/PATCH]", name)
+    logger.info(f"注册路由: /api/{name}/{allows}")
 
 
 # ---------- 构建 FastAPI 应用 ----------

@@ -41,6 +41,8 @@ class BaseHandler:
     COLLECTION: str = "base"    # MongoDB 集合名
     PAGE_SIZE: int = 20         # 默认分页大小
 
+    ALLOW_METHOD = ["GET", "POST", "DELETE", "PUT", "PATCH"]
+
     # ---- 内部能力 ----
 
     @property
@@ -52,7 +54,7 @@ class BaseHandler:
 
     # ======================== RESTful 端点 ========================
 
-    def post(self, data: dict) -> Any:
+    def post(self, data: dict, **kwargs) -> Any:
         """新增 — POST /api/{NAME}"""
         result = self.crud.insert_one(data)
         return {"id": str(result.inserted_id)}
