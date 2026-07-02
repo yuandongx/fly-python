@@ -79,10 +79,11 @@ def _register_handler(app: FastAPI, handler_cls: type[BaseHandler]) -> None:
 
     instance = handler_cls()
     allows = instance.ALLOW_METHOD
+    body = instance.BODY_PARAMS
     router = APIRouter(prefix=f"/api/{name}", tags=[name])
 
     # ------------- POST /api/{name} -------------
-    async def _post(request: Request, data: instance.BODY_TYPE = Body(...)):
+    async def _post(request: Request, data = Body(...)):
         try:
             result = instance.post(data, request=request)
             return JSONResponse(content=result)
